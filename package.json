@@ -1,0 +1,20 @@
+{
+  "name": "mint-lite",
+  "version": "1.0.0",
+  "description": "Single-user SQLite-based Plaid-connected personal finance hub",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node server.js",
+    "ingest": "node ingest.js --log",
+    "init": "node server.js --init-only"
+  },
+  "keywords": ["plaid", "finance", "sqlite", "personal-finance"],
+  "author": "Karl ops AI",
+  "license": "MIT",
+  "dependencies": {
+    "plaid": "^18.0.0",
+    "fastify": "^4.25.0",
+    "dotenv": "^16.3.1",
+    "better-sqlite3": "^9.2.0"
+  }
+}
