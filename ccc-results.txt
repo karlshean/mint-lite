@@ -1,1 +1,222 @@
 mint-lite not run yet
+
+[2025-10-30T21:05:55.173Z]
+{
+  "status": "init",
+  "message": "Database initialized via --init-only",
+  "timestamp": "2025-10-30T21:05:55.171Z"
+}
+============================================================
+
+[2025-10-30T21:06:09.869Z]
+{
+  "status": "error",
+  "action": "server-start",
+  "error": "listen EADDRINUSE: address already in use 0.0.0.0:8080",
+  "timestamp": "2025-10-30T21:06:09.868Z"
+}
+============================================================
+
+[2025-10-30T21:06:54.943Z]
+{
+  "status": "server-started",
+  "timestamp": "2025-10-30T21:06:54.942Z",
+  "port": "3001"
+}
+============================================================
+
+[2025-10-30T21:08:59.438Z]
+{
+  "status": "link-token-created",
+  "timestamp": "2025-10-30T21:08:59.438Z",
+  "link_token": "link-production-4197..."
+}
+============================================================
+
+[2025-10-30T21:17:40.693Z]
+{
+  "status": "link-token-created",
+  "timestamp": "2025-10-30T21:17:40.692Z",
+  "link_token": "link-production-2c37..."
+}
+============================================================
+
+[2025-10-30T21:18:53.272Z]
+{
+  "status": "error",
+  "action": "server-start",
+  "error": "listen EADDRINUSE: address already in use 0.0.0.0:3001",
+  "timestamp": "2025-10-30T21:18:53.271Z"
+}
+============================================================
+
+[2025-10-30T21:20:51.611Z]
+{
+  "status": "server-started",
+  "timestamp": "2025-10-30T21:20:51.610Z",
+  "port": "3001"
+}
+============================================================
+
+[2025-10-30T21:21:27.498Z]
+{
+  "status": "link-token-created",
+  "timestamp": "2025-10-30T21:21:27.498Z",
+  "link_token": "link-production-c821..."
+}
+============================================================
+
+[2025-10-30T21:21:29.366Z]
+{
+  "status": "link-token-created",
+  "timestamp": "2025-10-30T21:21:29.366Z",
+  "link_token": "link-production-94f6..."
+}
+============================================================
+
+[2025-10-30T21:21:30.464Z]
+{
+  "status": "link-token-created",
+  "timestamp": "2025-10-30T21:21:30.464Z",
+  "link_token": "link-production-d956..."
+}
+============================================================
+
+[2025-10-30T21:22:29.621Z]
+{
+  "status": "link-token-created",
+  "timestamp": "2025-10-30T21:22:29.621Z",
+  "link_token": "link-production-a164..."
+}
+============================================================
+
+[2025-10-30T21:34:07.995Z]
+{
+  "status": "error",
+  "action": "server-start",
+  "error": "listen EADDRINUSE: address already in use 0.0.0.0:3001",
+  "timestamp": "2025-10-30T21:34:07.994Z"
+}
+============================================================
+
+[2025-10-30T21:34:50.443Z]
+{
+  "status": "server-started",
+  "timestamp": "2025-10-30T21:34:50.442Z",
+  "port": "3001"
+}
+============================================================
+
+[2025-10-30T21:35:33.938Z]
+{
+  "status": "link-token-created",
+  "timestamp": "2025-10-30T21:35:33.938Z",
+  "link_token": "link-production-8ca1..."
+}
+============================================================
+
+[2025-10-30T21:39:05.112Z]
+{
+  "status": "token-exchanged",
+  "timestamp": "2025-10-30T21:39:05.112Z",
+  "item_id": "QV4DbgOLm0fq5aqeye1gc37QBV0PvVcEEdB8v"
+}
+============================================================
+
+[2025-10-30T21:39:18.473Z]
+{
+  "status": "ingest-complete",
+  "timestamp": "2025-10-30T21:39:18.473Z",
+  "total_items": 1,
+  "total_fetched": 52,
+  "total_inserted": 52,
+  "total_categorized": 52
+}
+============================================================
+
+[2025-10-30T21:41:37.855Z]
+{
+  "status": "token-exchanged",
+  "timestamp": "2025-10-30T21:41:37.855Z",
+  "item_id": "yLkpOrA91pUMyA81d7oqcb9wdd5XOLtO8aYwy"
+}
+============================================================
+
+[2025-10-30T21:41:42.134Z]
+{
+  "status": "ingest-complete",
+  "timestamp": "2025-10-30T21:41:42.134Z",
+  "total_items": 2,
+  "total_fetched": 60,
+  "total_inserted": 8,
+  "total_categorized": 8
+}
+============================================================
+
+[2025-10-30T21:45:07.503Z]
+{
+  "status": "token-exchanged",
+  "timestamp": "2025-10-30T21:45:07.503Z",
+  "item_id": "3preJ1o1rqS9PNae8OpJsLPkAL6oRbCKo0b90"
+}
+============================================================
+
+[2025-10-30T21:45:11.950Z]
+{
+  "status": "ingest-complete",
+  "timestamp": "2025-10-30T21:45:11.950Z",
+  "total_items": 3,
+  "total_fetched": 110,
+  "total_inserted": 50,
+  "total_categorized": 50
+}
+============================================================
+
+[2025-10-30T21:48:34.013Z]
+{
+  "status": "token-exchanged",
+  "timestamp": "2025-10-30T21:48:34.013Z",
+  "item_id": "LoJ0vQnBOZfkPRjQ99kASDv104DDPXf0myN49"
+}
+============================================================
+
+[2025-10-30T21:48:38.372Z]
+{
+  "status": "ingest-complete",
+  "timestamp": "2025-10-30T21:48:38.372Z",
+  "total_items": 4,
+  "total_fetched": 157,
+  "total_inserted": 47,
+  "total_categorized": 47
+}
+============================================================
+
+[2025-10-30T21:51:53.439Z]
+{
+  "status": "token-exchanged",
+  "timestamp": "2025-10-30T21:51:53.439Z",
+  "item_id": "oEYJqxV10QUYZO7dD6ZViVN545BB8zfBoJoNv"
+}
+============================================================
+
+[2025-10-30T21:54:33.895Z]
+{
+  "status": "ingest-complete",
+  "timestamp": "2025-10-30T21:54:33.894Z",
+  "total_items": 5,
+  "total_fetched": 228,
+  "total_inserted": 71,
+  "total_categorized": 71
+}
+============================================================
+
+[2025-10-30T21:55:30.962Z]
+{
+  "status": "ingest-complete",
+  "timestamp": "2025-10-30T21:55:30.962Z",
+  "total_items": 5,
+  "total_fetched": 228,
+  "total_inserted": 0,
+  "total_categorized": 0
+}
+============================================================

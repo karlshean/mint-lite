@@ -8,13 +8,21 @@
     "ingest": "node ingest.js --log",
     "init": "node server.js --init-only"
   },
-  "keywords": ["plaid", "finance", "sqlite", "personal-finance"],
+  "keywords": [
+    "plaid",
+    "finance",
+    "sqlite",
+    "personal-finance"
+  ],
   "author": "Karl ops AI",
   "license": "MIT",
   "dependencies": {
-    "plaid": "^18.0.0",
-    "fastify": "^4.25.0",
+    "@fastify/cors": "^11.1.0",
+    "@fastify/rate-limit": "^10.3.0",
+    "better-sqlite3": "^11.7.0",
     "dotenv": "^16.3.1",
-    "better-sqlite3": "^9.2.0"
+    "fastify": "^4.25.0",
+    "helmet": "^8.1.0",
+    "plaid": "^18.0.0"
   }
 }

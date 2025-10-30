@@ -1,5 +1,7 @@
 'use strict';
 
+const path = require('path');
+const fs = require('fs');
 const fastify = require('fastify');
 const { Configuration, PlaidApi, PlaidEnvironments } = require('plaid');
 const { loadEnv, getDb, logCcc, categorize } = require('./lib');
@@ -31,6 +33,18 @@ const plaidClient = new PlaidApi(plaidConfig);
 
 // Initialize Fastify
 const app = fastify({ logger: false });
+
+/**
+ * Serve HTML page at root
+ */
+app.get('/', async (request, reply) => {
+  const filePath = path.join(__dirname, 'public', 'link.html');
+  if (fs.existsSync(filePath)) {
+    const html = fs.readFileSync(filePath, 'utf8');
+    return reply.type('text/html').send(html);
+  }
+  return { message: 'Mint Lite API - link.html not found' };
+});
 
 /**
  * Health check
