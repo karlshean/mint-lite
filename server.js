@@ -227,27 +227,222 @@ app.post('/ingest', async (request, reply) => {
 });
 
 /**
- * Start server
+ * API Key authentication hook for /manual/* routes
+ */
+app.addHook('preHandler', async (request, reply) => {
+  // Only enforce API key on /manual/* routes
+  if (request.url.startsWith('/manual/')) {
+    const apiKey = request.headers['x-api-key'];
+
+    if (!apiKey || apiKey !== process.env.API_KEY) {
+      reply.code(401).send({ error: 'Unauthorized - Invalid or missing API key' });
+      return;
+    }
+  }
+});
+
+/**
+ * GET /manual/accounts - List all accounts
+ */
+app.get('/manual/accounts', {
+  schema: {
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          accounts: { type: 'array' },
+          total: { type: 'number' }
+        }
+      }
+    }
+  }
+}, async (request, reply) => {
+  try {
+    const accounts = db.prepare('SELECT * FROM accounts').all();
+
+    logCcc({
+      status: 'manual-accounts-fetched',
+      timestamp: new Date().toISOString(),
+      count: accounts.length
+    });
+
+    return { accounts, total: accounts.length };
+  } catch (error) {
+    logCcc({
+      status: 'error',
+      action: 'manual-accounts',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+    reply.code(500).send({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * GET /manual/transactions - List transactions with optional filters
+ */
+app.get('/manual/transactions', {
+  schema: {
+    querystring: {
+      type: 'object',
+      properties: {
+        limit: { type: 'number', minimum: 1, maximum: 1000 },
+        offset: { type: 'number', minimum: 0 }
+      }
+    },
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          transactions: { type: 'array' },
+          total: { type: 'number' },
+          limit: { type: 'number' },
+          offset: { type: 'number' }
+        }
+      }
+    }
+  }
+}, async (request, reply) => {
+  try {
+    const limit = request.query.limit || 100;
+    const offset = request.query.offset || 0;
+
+    const transactions = db.prepare(`
+      SELECT * FROM transactions
+      ORDER BY posted_at DESC
+      LIMIT ? OFFSET ?
+    `).all(limit, offset);
+
+    const totalResult = db.prepare('SELECT COUNT(*) as count FROM transactions').get();
+
+    logCcc({
+      status: 'manual-transactions-fetched',
+      timestamp: new Date().toISOString(),
+      returned: transactions.length,
+      total: totalResult.count
+    });
+
+    return {
+      transactions,
+      total: totalResult.count,
+      limit,
+      offset
+    };
+  } catch (error) {
+    logCcc({
+      status: 'error',
+      action: 'manual-transactions',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+    reply.code(500).send({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * POST /manual/ingest - Manually trigger transaction ingestion
+ */
+app.post('/manual/ingest', {
+  schema: {
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          status: { type: 'string' },
+          total_items: { type: 'number' },
+          total_fetched: { type: 'number' },
+          total_inserted: { type: 'number' },
+          total_categorized: { type: 'number' }
+        }
+      }
+    }
+  }
+}, async (request, reply) => {
+  try {
+    const result = await ingestForAllItems(db);
+
+    logCcc({
+      status: 'manual-ingest-complete',
+      timestamp: new Date().toISOString(),
+      ...result
+    });
+
+    return { status: 'success', ...result };
+  } catch (error) {
+    logCcc({
+      status: 'error',
+      action: 'manual-ingest',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+    reply.code(500).send({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * Start server with port guard
  */
 async function start() {
   try {
-    await app.listen({ port: env.port, host: '0.0.0.0' });
-    console.log(`Server running on http://localhost:${env.port}`);
+    // Port guard - check if port is already in use
+    const portInUse = await checkPortInUse(env.port);
+    if (portInUse) {
+      const errorMsg = `Port ${env.port} is already in use. Server not started.`;
+      console.error(errorMsg);
+      logCcc({
+        status: 'error',
+        action: 'server-start',
+        error: errorMsg,
+        timestamp: new Date().toISOString()
+      });
+      process.exit(1);
+    }
+
+    await app.listen({ port: env.port, host: process.env.HOST || '127.0.0.1' });
+    console.log(`Server running on http://${process.env.HOST || '127.0.0.1'}:${env.port}`);
     logCcc({
       status: 'server-started',
       timestamp: new Date().toISOString(),
-      port: env.port
+      port: env.port,
+      host: process.env.HOST || '127.0.0.1'
     });
   } catch (err) {
-    console.error(err);
+    const errorMsg = err.code === 'EADDRINUSE'
+      ? `Port ${env.port} is already in use`
+      : err.message;
+
+    console.error('Server start error:', errorMsg);
     logCcc({
       status: 'error',
       action: 'server-start',
-      error: err.message,
+      error: errorMsg,
       timestamp: new Date().toISOString()
     });
     process.exit(1);
   }
+}
+
+/**
+ * Check if port is in use
+ */
+function checkPortInUse(port) {
+  return new Promise((resolve) => {
+    const net = require('net');
+    const tester = net.createServer()
+      .once('error', (err) => {
+        if (err.code === 'EADDRINUSE') {
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      })
+      .once('listening', () => {
+        tester.once('close', () => {
+          resolve(false);
+        }).close();
+      })
+      .listen(port, process.env.HOST || '127.0.0.1');
+  });
 }
 
 start();

@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 require('dotenv').config();
 const Database = require('better-sqlite3');
 
@@ -66,6 +67,59 @@ function logCcc(resultObj) {
 }
 
 /**
+ * Encrypt text using AES-256-GCM
+ * @param {string} text - Plain text to encrypt
+ * @returns {string} - Encrypted text in format: iv:authTag:ciphertext (hex)
+ */
+function encrypt(text) {
+  const key = process.env.ENCRYPTION_KEY;
+  if (!key || key.length !== 64) {
+    throw new Error('ENCRYPTION_KEY must be 64 hex characters (32 bytes)');
+  }
+
+  const keyBuffer = Buffer.from(key, 'hex');
+  const iv = crypto.randomBytes(16);
+  const cipher = crypto.createCipheriv('aes-256-gcm', keyBuffer, iv);
+
+  let encrypted = cipher.update(text, 'utf8', 'hex');
+  encrypted += cipher.final('hex');
+  const authTag = cipher.getAuthTag();
+
+  // Return format: iv:authTag:ciphertext
+  return `${iv.toString('hex')}:${authTag.toString('hex')}:${encrypted}`;
+}
+
+/**
+ * Decrypt text using AES-256-GCM
+ * @param {string} ciphertext - Encrypted text in format: iv:authTag:ciphertext (hex)
+ * @returns {string} - Decrypted plain text
+ */
+function decrypt(ciphertext) {
+  const key = process.env.ENCRYPTION_KEY;
+  if (!key || key.length !== 64) {
+    throw new Error('ENCRYPTION_KEY must be 64 hex characters (32 bytes)');
+  }
+
+  const parts = ciphertext.split(':');
+  if (parts.length !== 3) {
+    throw new Error('Invalid ciphertext format');
+  }
+
+  const keyBuffer = Buffer.from(key, 'hex');
+  const iv = Buffer.from(parts[0], 'hex');
+  const authTag = Buffer.from(parts[1], 'hex');
+  const encrypted = parts[2];
+
+  const decipher = crypto.createDecipheriv('aes-256-gcm', keyBuffer, iv);
+  decipher.setAuthTag(authTag);
+
+  let decrypted = decipher.update(encrypted, 'hex', 'utf8');
+  decrypted += decipher.final('utf8');
+
+  return decrypted;
+}
+
+/**
  * Simple keyword-based transaction categorization
  */
 function categorize(name, merchant, rawCategory) {
@@ -109,5 +163,7 @@ module.exports = {
   loadEnv,
   getDb,
   logCcc,
-  categorize
+  categorize,
+  encrypt,
+  decrypt
 };
