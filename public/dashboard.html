@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mint Lite Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #f5f6fa;
+            color: #2c3e50;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-family: 'Courier New', monospace;
+            color: #34495e;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .status-pill {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .status-green {
+            background: #2ecc71;
+        }
+
+        .status-red {
+            background: #e74c3c;
+        }
+
+        .status-gray {
+            background: #95a5a6;
+        }
+
+        .actions {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 15px;
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        button:hover:not(:disabled) {
+            background: #2980b9;
+        }
+
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .download-btn {
+            background: #27ae60;
+        }
+
+        .download-btn:hover {
+            background: #229954;
+        }
+
+        section {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            font-family: 'Courier New', monospace;
+            color: #2c3e50;
+            font-size: 20px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #ecf0f1;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #34495e;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ecf0f1;
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .balance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .balance-card {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+        }
+
+        .balance-label {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+
+        .balance-amount {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+            font-family: 'Courier New', monospace;
+        }
+
+        .positive {
+            color: #27ae60;
+        }
+
+        .negative {
+            color: #e74c3c;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #95a5a6;
+            font-style: italic;
+        }
+
+        .error {
+            background: #fee;
+            color: #c00;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #e74c3c;
+            margin-bottom: 20px;
+        }
+
+        .account-mask {
+            font-family: 'Courier New', monospace;
+            color: #7f8c8d;
+        }
+
+        .transaction-date {
+            color: #7f8c8d;
+            font-size: 13px;
+        }
+
+        .transaction-amount {
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #95a5a6;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Mint Lite Dashboard</h1>
+            <div id="sync-status">
+                <span class="status-pill status-gray">Loading...</span>
+            </div>
+        </header>
+
+        <div class="actions">
+            <button id="ingest-btn" onclick="triggerIngest()">Ingest Now</button>
+            <button class="download-btn" onclick="window.location.href='/transactions.csv'">Download CSV</button>
+        </div>
+
+        <div id="error-container"></div>
+
+        <section id="balances-section">
+            <h2>Balances Snapshot</h2>
+            <div id="balances-content" class="loading">Loading balances...</div>
+        </section>
+
+        <section id="accounts-section">
+            <h2>Connected Accounts</h2>
+            <div id="accounts-content" class="loading">Loading accounts...</div>
+        </section>
+
+        <section id="transactions-section">
+            <h2>Recent Transactions (50)</h2>
+            <div id="transactions-content" class="loading">Loading transactions...</div>
+        </section>
+
+        <div class="footer">
+            Mint Lite Dashboard • WireGuard-Style Simplicity • No Auto-Refresh
+        </div>
+    </div>
+
+    <script src="/dashboard.js"></script>
+</body>
+</html>

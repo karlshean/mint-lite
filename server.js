@@ -34,6 +34,12 @@ const plaidClient = new PlaidApi(plaidConfig);
 // Initialize Fastify
 const app = fastify({ logger: false });
 
+// Register static file serving for /public directory
+app.register(require('@fastify/static'), {
+  root: path.join(__dirname, 'public'),
+  prefix: '/',
+});
+
 /**
  * Serve HTML page at root
  */
@@ -372,6 +378,68 @@ app.post('/manual/ingest', {
     logCcc({
       status: 'error',
       action: 'manual-ingest',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+    reply.code(500).send({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * GET /manual/status - Get sync status from ccc-results.txt
+ */
+app.get('/manual/status', {
+  schema: {
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          ok: { type: 'boolean' },
+          last_ingest: { type: 'string' },
+          age_hours: { type: 'number' }
+        }
+      }
+    }
+  }
+}, async (request, reply) => {
+  try {
+    const cccFilePath = path.join(__dirname, 'ccc-results.txt');
+
+    // Check if file exists
+    if (!fs.existsSync(cccFilePath)) {
+      return { ok: false };
+    }
+
+    // Read file and find last ingest-complete entry
+    const content = fs.readFileSync(cccFilePath, 'utf8');
+    const lines = content.split('\n').reverse(); // Read from bottom up
+
+    for (const line of lines) {
+      if (line.includes('ingest-complete') || line.includes('manual-ingest-complete')) {
+        // Try to extract timestamp from the line
+        const timestampMatch = line.match(/timestamp["\s:]+([0-9T:.\-Z]+)/i) ||
+                              line.match(/([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z)/);
+
+        if (timestampMatch) {
+          const lastIngestTime = new Date(timestampMatch[1]);
+          const now = new Date();
+          const ageHours = (now - lastIngestTime) / (1000 * 60 * 60);
+
+          return {
+            ok: true,
+            last_ingest: lastIngestTime.toISOString(),
+            age_hours: Math.round(ageHours * 100) / 100
+          };
+        }
+      }
+    }
+
+    // No valid ingest entry found
+    return { ok: false };
+  } catch (error) {
+    logCcc({
+      status: 'error',
+      action: 'manual-status',
       error: error.message,
       timestamp: new Date().toISOString()
     });

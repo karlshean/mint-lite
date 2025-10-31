@@ -461,3 +461,55 @@ NEXT STEPS:
 
 [✔] CCC-v2 Upgrade complete. Secure + manual controls operational.
 ============================================================
+
+[2025-10-31T01:18:16.348Z]
+{
+  "status": "link-token-created",
+  "timestamp": "2025-10-31T01:18:16.348Z",
+  "link_token": "link-production-be84..."
+}
+============================================================
+
+[2025-10-31T01:18:39.846Z]
+{
+  "status": "link-token-created",
+  "timestamp": "2025-10-31T01:18:39.846Z",
+  "link_token": "link-production-a690..."
+}
+============================================================
+
+[2025-10-31T02:06:10.329Z]
+{
+  "status": "error",
+  "action": "server-start",
+  "error": "fastify-plugin: @fastify/static - expected '5.x' fastify version, '4.29.1' is installed",
+  "timestamp": "2025-10-31T02:06:10.327Z"
+}
+============================================================
+
+[2025-10-31T02:06:55.586Z]
+{
+  "status": "server-started",
+  "timestamp": "2025-10-31T02:06:55.585Z",
+  "port": "3001",
+  "host": "127.0.0.1"
+}
+============================================================
+
+[2025-10-31T02:07:41.683Z]
+{
+  "status": "manual-accounts-fetched",
+  "timestamp": "2025-10-31T02:07:41.683Z",
+  "count": 8
+}
+============================================================
+
+[2025-10-31T02:07:42.695Z]
+{
+  "status": "manual-transactions-fetched",
+  "timestamp": "2025-10-31T02:07:42.694Z",
+  "returned": 5,
+  "total": 302
+}
+============================================================
+[2025-10-31T02:08:28.000Z] [✔] Dashboard Add-On installed OK
